@@ -47,17 +47,15 @@ public:
     // As per the project instructions, the control
     // needs to be with in a defined boundary
     // we need 2 variables for it
-  	
-  	double output_limit_maximum;
-  	double output_limit_minimum;
+    double output_limit_maximum;
+    double output_limit_minimum;
     
     /*
     * Delta time
     */
     // variable for time frequency delta
-	double delta_time;
-	
-	
+    double delta_time;
+    
     /*
     * Constructor
     */
