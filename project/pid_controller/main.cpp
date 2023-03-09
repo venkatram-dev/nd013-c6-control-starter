@@ -337,8 +337,24 @@ int main ()
           * TODO (step 2): compute the throttle error (error_throttle) from the position and the desired speed
           **/
           // modify the following line for step 2
-          error_throttle = 0;
+          //error_throttle = 0;          
+          
+          // Reason for throttle error calculation : 
+          // The project instructions gives hints about the different variables related to velocity.
+          // error_throttle is the difference between the actual velocity and the desired velocity.
+          // actual velocity is found from the variable velocity.
+          // desired velocity can be derived from the last point of v_points vector.
+          // so we can calculate error throttle as actual_velocity - desired_velocity.
+          
+          double desired_velocity = v_points.back();
+          double actual_velocity = velocity;
 
+          error_throttle = actual_velocity - desired_velocity;
+          
+          cout << "desired_velocity" <<desired_velocity <<endl;
+          cout << "actual_velocity" << actual_velocity <<endl;
+          
+          cout << "vr error_throttle!!!" << error_throttle <<endl;
 
 
           double throttle_output;
