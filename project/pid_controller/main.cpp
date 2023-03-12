@@ -228,8 +228,28 @@ int main ()
   PID pid_steer = PID();
   PID pid_throttle = PID();
   
-  pid_steer.Init(0.2, 3, 0.04, 1.2, -1.2);
-  pid_throttle.Init(0.2, 3, 0.04, 1.0, -1.0);
+  //Few trial runs
+  //pid_throttle.Init(0.2, 0.001, 0.01, 1.0, -1.0);
+  
+  // more collision
+  //pid_steer.Init(0.5, 0.01, 0.92, 1.2, -1.2);
+  //pid_throttle.Init(0.2, 0.01, 0.01, 1.0, -1.0);
+  
+  // more collision
+  //pid_steer.Init(0.3, 0.01, 0.92, 1.2, -1.2);
+  //pid_throttle.Init(0.02, 0.01, 0.01, 1.0, -1.0);
+  
+  // more collission
+  //pid_steer.Init(0.3, 0.001, 0.95, 1.2, -1.2);
+  //pid_throttle.Init(0.05, 0.008, 0.008, 1.0, -1.0);
+
+  
+  //below works best so far
+  pid_steer.Init(0.3, 0.001, 1.0, 1.2, -1.2);
+  pid_throttle.Init(0.02, 0.01, 0.01, 1.0, -1.0);
+  
+
+
 
   h.onMessage([&pid_steer, &pid_throttle, &new_delta_time, &timer, &prev_timer, &i, &prev_timer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode)
   {
@@ -303,8 +323,45 @@ int main ()
           /**
           * TODO (step 3): compute the steer error (error_steer) from the position and the desired trajectory
           **/
-          error_steer = 0;
+          //error_steer = 0;
+          // Reason for steer error calculation.
+          
+          // As per the project instructions, steer error can be calculated by finding the angle difference between the actual steer and the desired steer.
+          // The path planner plans the desired trajectory and we can use the variables y_points and x_points to find more about the desired steer.
+          // As per the project instructions, actual_steer of car can be directly obtained from the variable yaw.
+          
+          //Below is explanation about desired_steer calculation
+          // trigonometric reason to calculate desired steer
+          // As per basic trigonometry, to find the change in location in x direction, we can use cos(theta)
+          // to find the change in location in y direction, we can use sin(theta)
+          // We have also used similar calculation to find x and y in Project 5 motion planning
+          // refer https://github.com/venkatram-dev/nd013-c5-planning-starter/blob/master/project/starter_files/motion_planner.cpp#L116
+          // to find the slope we can use sin(theta)/cos(theta) or in other words tan(theta)
+          // to conclude - To find the angle which gives this slope, we can use arc tangent
+          
+          //Implementation reason to calculate desired steer
+          // In line number 95 in this file,in the function path_planner
+          //https://github.com/venkatram-dev/nd013-c6-control-starter/blob/master/project/pid_controller/main.cpp#L95
+          // we can see that it already uses similar concept
+          //ego_state.rotation.yaw = angle_between_points(x_points[x_points.size()-2], y_points[y_points.size()-2], x_points[x_points.size()-1], y_points[y_points.size()-1]);
+          //https://github.com/venkatram-dev/nd013-c6-control-starter/blob/master/project/pid_controller/main.cpp#L80
+          //Here the, angle_between_points = atan2(y2-y1, x2-x1)
+          // to conclude - we can use similar function for our use case to calculate desired_steer
+          
+          double actual_steer = yaw;
+          double x1_tmp = x_points[x_points.size()-2];
+          double y1_tmp = y_points[y_points.size()-2];
+          double x2_tmp = x_points[x_points.size()-1];
+          double y2_tmp = y_points[y_points.size()-1];
+          double desired_steer = atan2(y2_tmp-y1_tmp, x2_tmp-x1_tmp);
 
+          error_steer = actual_steer - desired_steer ;
+          
+          cout << "desired_steer" <<desired_steer <<endl;
+          cout << "actual_steer" << actual_steer <<endl;
+          
+          cout << "vr error_steer!!!" << error_steer <<endl;
+          
           /**
           * TODO (step 3): uncomment these lines
           **/
